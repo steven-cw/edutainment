@@ -16,7 +16,9 @@ struct ContentView: View {
     @State private var correctAnswer = 0
     @State private var input = 0
     @State private var correct = 0
+    @State private var tries = 0
     @State private var table = [Int]()
+    @State private var showingScore = false
     
     var questions = [5, 10, 20]
     
@@ -37,11 +39,14 @@ struct ContentView: View {
                 startGame()
             }
                     label: {
-                        Text("Ready to Play!")
+                        Text("Save Settings")
                     }
             
             Section {
-                Text("What is \(num1) x \(num2)")
+                VStack {
+                    Text("What is \(num1) x \(num2)")
+                        .font(.largeTitle.bold())
+                }
             }
             
             Section {
@@ -49,7 +54,7 @@ struct ContentView: View {
                         .number)
                 .keyboardType(.decimalPad)
             } header: {
-                Text("Enter number:")
+                Text("Your Answer:")
             }
             
             Button {
@@ -59,15 +64,19 @@ struct ContentView: View {
                     label: {
                         Text("Submit Answer")
                     }
-            Section {
-                Text("Correct: \(correct)")
-            }
+        }
+        .alert("Game over!", isPresented: $showingScore) {
+            Button("Continue", action: startGame)
+                    } message: {
+                        Text("Your score is \(correct)/\(tries)")
         }
         .padding()
     }
     
     func startGame() {
-        table = [Int](0...questionsSelection)
+        tries = 0
+        correct = 0
+        table = [Int](0...timesTable)
         newQuestion()
     }
     
@@ -78,8 +87,12 @@ struct ContentView: View {
     }
     
     func checkAnswer() {
+        tries += 1
         if input == correctAnswer {
             correct += 1
+        }
+        if tries == questionsSelection {
+            showingScore = true
         }
     }
 }
