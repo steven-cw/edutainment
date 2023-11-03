@@ -19,51 +19,57 @@ struct ContentView: View {
     @State private var tries = 0
     @State private var table = [Int]()
     @State private var showingScore = false
+    @State private var gameOn = false
     
     var questions = [5, 10, 20]
     
     var body: some View {
         Form {
+            if gameOn == false {
             Section {
                 Stepper("Times tables up to \(timesTable)", value: $timesTable, in: 2...12, step: 1)
             }
-            Section {
+                Section {
                     Picker("Questions", selection: $questionsSelection) {
                         ForEach(questions, id: \.self) {
                             Text(String($0))
                         }
                     }
+                }
             }
             Button {
                 gameActive = true
                 startGame()
-            }
-                    label: {
-                        Text("Save Settings")
-                    }
-            
-            Section {
-                VStack {
-                    Text("What is \(num1) x \(num2)")
-                        .font(.largeTitle.bold())
-                }
-            }
-            
-            Section {
-                TextField("Amount", value: $input, format:
-                        .number)
-                .keyboardType(.decimalPad)
-            } header: {
-                Text("Your Answer:")
-            }
-            
-            Button {
-                checkAnswer()
                 newQuestion()
+                gameOn.toggle()
             }
                     label: {
-                        Text("Submit Answer")
+                        Text(gameOn == true ? "New Game": "Start Game")
                     }
+            if gameOn {
+                Section {
+                    VStack {
+                        Text("What is \(num1) x \(num2)")
+                            .font(.largeTitle.bold())
+                    }
+                }
+                
+                Section {
+                    TextField("Amount", value: $input, format:
+                            .number)
+                    .keyboardType(.decimalPad)
+                } header: {
+                    Text("Your Answer:")
+                }
+                
+                Button {
+                    checkAnswer()
+                    newQuestion()
+                }
+            label: {
+                Text("Submit Answer")
+            }
+            }
         }
         .alert("Game over!", isPresented: $showingScore) {
             Button("Continue", action: startGame)
@@ -77,7 +83,6 @@ struct ContentView: View {
         tries = 0
         correct = 0
         table = [Int](0...timesTable)
-        newQuestion()
     }
     
     func newQuestion() {
