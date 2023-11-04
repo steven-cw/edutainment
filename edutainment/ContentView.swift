@@ -21,55 +21,69 @@ struct ContentView: View {
     @State private var showingScore = false
     @State private var gameOn = false
     
-    var questions = [5, 10, 20]
+    let questions = [5, 10, 20]
     
     var body: some View {
-        Form {
-            if gameOn == false {
-            Section {
-                Stepper("Times tables up to \(timesTable)", value: $timesTable, in: 2...12, step: 1)
+        ZStack {
+            VStack {
+                Image("bear")
+                    .resizable()
+                    .frame(width: 400.0, height: 400.0)
             }
-                Section {
-                    Picker("Questions", selection: $questionsSelection) {
-                        ForEach(questions, id: \.self) {
-                            Text(String($0))
+            Form {
+                if gameOn == false {
+                    Section {
+                        Stepper("Times tables up to \(timesTable)", value: $timesTable, in: 2...12, step: 1)
+                    }
+                    Section {
+                        Picker("Questions", selection: $questionsSelection) {
+                            ForEach(questions, id: \.self) {
+                                Text(String($0))
+                            }
                         }
                     }
                 }
-            }
-            Button {
-                gameActive = true
-                startGame()
-                newQuestion()
-                gameOn.toggle()
-            }
-                    label: {
-                        Text(gameOn == true ? "New Game": "Start Game")
-                    }
-            if gameOn {
-                Section {
-                    VStack {
-                        Text("What is \(num1) x \(num2)")
-                            .font(.largeTitle.bold())
-                    }
-                }
-                
-                Section {
-                    TextField("Amount", value: $input, format:
-                            .number)
-                    .keyboardType(.decimalPad)
-                } header: {
-                    Text("Your Answer:")
-                }
-                
                 Button {
-                    checkAnswer()
+                    gameActive = true
+                    startGame()
                     newQuestion()
+                    gameOn.toggle()
                 }
             label: {
-                Text("Submit Answer")
+                Text(gameOn == true ? "New Game": "Start Game")
             }
+                if gameOn {
+                    Section {
+                        VStack {
+                            Text("What is \(num1) x \(num2)")
+                                .font(.largeTitle.bold())
+                        }
+                    }
+                    
+                    Section {
+                        TextField("Amount", value: $input, format:
+                                .number)
+                        .keyboardType(.decimalPad)
+                    } header: {
+                        Text("Your Answer:")
+                    }
+                    
+                    Button {
+                        checkAnswer()
+                        newQuestion()
+                    }
+                label: {
+                    Text("Submit Answer")
+                }
+                }
             }
+            .opacity(0.8)
+            VStack {
+                Image("bear")
+                    .resizable()
+                    .frame(width: 300.0, height: 300.0)
+            }
+            
         }
         .alert("Game over!", isPresented: $showingScore) {
             Button("Continue", action: startGame)
@@ -92,6 +106,7 @@ struct ContentView: View {
     }
     
     func checkAnswer() {
+        input = 0
         tries += 1
         if input == correctAnswer {
             correct += 1
